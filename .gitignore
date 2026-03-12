@@ -20,3 +20,29 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Streamlit
+*.h5
+models/
+!models/best_chicken_model.h5
+
+# Data
+data/
+data /
