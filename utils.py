@@ -37,23 +37,6 @@ def preprocess_image(img):
     return img_array
 
 
-def predict_disease(model, img_array):
-    """
-    Predict disease from image.
-
-    Args:
-        model: Trained Keras model
-        img_array: Preprocessed image array
-
-    Returns:
-        tuple of (predicted_class, confidence, all_probabilities)
-    """
-    predictions = model.predict(img_array, verbose=0)
-    predicted_class_idx = np.argmax(predictions, axis=1)[0]
-    confidence = np.max(predictions, axis=1)[0]
-    return CLASS_NAMES[predicted_class_idx], confidence, predictions[0]
-
-
 def load_model(model_path):
     """
     Load trained model from file.
@@ -150,7 +133,7 @@ def get_sample_images(data_path, class_names, num_samples=1):
     Get sample images for each class for reference.
 
     Args:
-        data_path: path to training data directory
+        data_path: Path to training data directory
         class_names: List of class names
         num_samples: Number of samples per class
 
@@ -169,9 +152,13 @@ def get_sample_images(data_path, class_names, num_samples=1):
         if not os.path.exists(class_dir):
             continue
 
-        images = [f for f in os.listdir(class_dir) if f.endswith(('.jpg', '.jpeg', '.png')][:num_samples]
+        # Get all image files
+        all_files = os.listdir(class_dir)
+        images = [f for f in all_files if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
 
         if len(images) > 0:
-            samples[class_name] = images[:num_samples]
+            # Get full paths for sample images
+            sample_paths = [os.path.join(class_dir, img) for img in images[:num_samples]]
+            samples[class_name] = sample_paths
 
     return samples
