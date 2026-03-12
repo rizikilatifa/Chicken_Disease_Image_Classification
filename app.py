@@ -25,8 +25,19 @@ def load_prediction_model():
     """Load the trained model"""
     if not os.path.exists(MODEL_PATH):
         return None
-    model = tf.keras.models.load_model(MODEL_PATH)
-    return model
+
+    try:
+        model = tf.keras.models.load_model(MODEL_PATH, compile=False)
+        # Recompile with standard Adam optimizer
+        model.compile(
+            optimizer='adam',
+            loss='categorical_crossentropy',
+            metrics=['accuracy']
+        )
+        return model
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+        return None
 
 
 @st.cache_data
