@@ -166,8 +166,8 @@ def main():
                 cols = st.columns(4)
                 for i, (cls, prob) in enumerate(zip(CLASS_NAMES, all_probs)):
                     cols[i].metric(f"{cls}", f"{prob:.4f}", delta=f"{prob:.4f}")
-                    # Progress bar
-                    cols[i].progress(prob)
+                    # Progress bar (convert to Python float)
+                    cols[i].progress(float(prob))
 
         # LIME Explanation section (outside prediction button)
         st.markdown("---")
