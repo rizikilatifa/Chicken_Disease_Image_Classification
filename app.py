@@ -302,10 +302,29 @@ def download_model():
         return False
 
     try:
+        import requests
         os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
-        import urllib.request
-        st.info("📥 Downloading model... This may take a few minutes.")
-        urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
+
+        st.info("📥 Downloading model from HuggingFace... This may take a few minutes (155MB).")
+
+        # Download with streaming to handle large files
+        response = requests.get(MODEL_URL, stream=True, timeout=300)
+        response.raise_for_status()
+
+        total_size = int(response.headers.get('content-length', 0))
+
+        with open(MODEL_PATH, 'wb') as f:
+            downloaded = 0
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+                    downloaded += len(chunk)
+                    if total_size > 0:
+                        percent = (downloaded / total_size) * 100
+                        if int(percent) % 10 == 0:  # Log every 10%
+                            st.info(f"📥 Downloading: {percent:.0f}% ({downloaded / (1024*1024):.1f}MB / {total_size / (1024*1024):.1f}MB)")
+
+        st.success("✅ Model downloaded successfully!")
         return True
     except Exception as e:
         st.error(f"Error downloading model: {e}")
