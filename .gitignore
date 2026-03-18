@@ -39,8 +39,8 @@ ENV/
 .ipynb_checkpoints/
 
 # Streamlit
+# Model file is tracked via Git LFS
 *.h5
-models/
 !models/best_chicken_model.h5
 
 # Data
