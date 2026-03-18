@@ -264,6 +264,7 @@ st.markdown("""
 # CONSTANTS
 # =============================================================================
 MODEL_PATH = "models/best_chicken_model.h5"
+MODEL_URL = os.environ.get("MODEL_URL", "https://huggingface.co/tiff12riziki/chicken-disease-classifier/resolve/main/best_chicken_model.h5")
 
 DISEASE_INFO = {
     'Coccidiosis': {
@@ -295,11 +296,29 @@ DISEASE_INFO = {
 # =============================================================================
 # CACHED FUNCTIONS
 # =============================================================================
+def download_model():
+    """Download model from external URL if not present"""
+    if not MODEL_URL:
+        return False
+
+    try:
+        os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
+        import urllib.request
+        st.info("📥 Downloading model... This may take a few minutes.")
+        urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
+        return True
+    except Exception as e:
+        st.error(f"Error downloading model: {e}")
+        return False
+
+
 @st.cache_resource
 def load_prediction_model():
     """Load the trained model"""
     if not os.path.exists(MODEL_PATH):
-        return None
+        # Try to download if URL is provided
+        if not download_model():
+            return None
 
     try:
         model = tf.keras.models.load_model(MODEL_PATH, compile=False)
